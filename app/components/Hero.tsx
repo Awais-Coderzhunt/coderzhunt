@@ -9,10 +9,14 @@ import {
   type StatIconName,
 } from "../constants/home";
 
-const HeroScene = dynamic(() => import("./HeroScene"), {
+const TechStackScene = dynamic(() => import("./TechStackScene"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full animate-pulse rounded-3xl bg-brand-soft/50" />
+    <div className="absolute inset-0 grid place-items-center bg-white">
+      <div className="text-xs uppercase tracking-[0.18em] text-gray-400">
+        Building scene…
+      </div>
+    </div>
   ),
 });
 
@@ -152,18 +156,13 @@ const STAT_ICONS: Record<StatIconName, React.ComponentType> = {
 
 export default function Hero() {
   return (
-    <section id="home" className="relative isolate overflow-hidden bg-white">
+    <section
+      id="home"
+      className="relative isolate overflow-hidden bg-white"
+    >
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-32 -right-32 h-160 w-160 rounded-full bg-brand-soft blur-3xl opacity-70" />
+        <div className="absolute -top-32 -right-32 h-160 w-160 rounded-full bg-brand-soft opacity-70 blur-3xl" />
         <div className="absolute -bottom-40 -left-20 h-120 w-120 rounded-full bg-brand/10 blur-3xl" />
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, #ff6b1a 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
       </div>
 
       <div className="mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl flex-col px-6 py-14 lg:px-10 lg:py-20">
@@ -232,17 +231,17 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="relative order-1 h-90 sm:h-115 lg:order-2 lg:h-150"
+            className="relative order-1 h-90 overflow-hidden rounded-3xl sm:h-115 lg:order-2 lg:h-150"
           >
-            <HeroScene />
+            <TechStackScene />
           </motion.div>
         </div>
 
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-12 w-full rounded-2xl border border-brand/15 bg-linear-to-br from-brand-soft via-white to-brand-soft/60 px-4 py-5 shadow-sm sm:px-6 sm:py-6 lg:mt-16"
+          className="mt-12 w-full rounded-2xl border border-brand/15 bg-white/75 px-4 py-5 shadow-lg shadow-brand/5 backdrop-blur-md sm:px-6 sm:py-6 lg:mt-16"
         >
           <ul className="grid grid-cols-2 gap-y-6 sm:grid-cols-4 sm:gap-y-0 sm:divide-x sm:divide-brand/15">
             {heroStats.map((stat) => {
@@ -267,7 +266,7 @@ export default function Hero() {
               );
             })}
           </ul>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

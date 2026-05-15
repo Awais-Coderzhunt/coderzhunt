@@ -6,7 +6,7 @@ import { motion, type Variants } from "framer-motion";
 import { heroContent } from "../constants/home";
 import Container from "./Container";
 
-const TechStackScene = dynamic(() => import("./TechStackScene"), {
+const TechStackScene = dynamic(() => import("./design/TechStackScene"), {
   ssr: false,
   loading: () => (
     <div className="absolute inset-0 grid place-items-center bg-white">

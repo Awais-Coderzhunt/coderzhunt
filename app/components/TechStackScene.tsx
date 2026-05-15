@@ -86,10 +86,43 @@ export default function TechStackScene() {
       controls.target.set(0, 2.5, 0);
       controls.minDistance = 10;
       controls.maxDistance = 30;
-      controls.maxPolarAngle = Math.PI * 0.49;
-      controls.minPolarAngle = Math.PI * 0.12;
+      const lockedPolarAngle = new THREE.Spherical().setFromVector3(
+        camera.position.clone().sub(controls.target),
+      ).phi;
+      controls.minPolarAngle = lockedPolarAngle;
+      controls.maxPolarAngle = lockedPolarAngle;
+      controls.enableRotate = false;
       controls.enablePan = false;
       controls.enableZoom = false;
+
+      const cameraOffset = camera.position.clone().sub(controls.target);
+      const orbitRadius = cameraOffset.length();
+      const orbitAzimuth = Math.atan2(cameraOffset.x, cameraOffset.z);
+      const maxAzimuthOffset = Math.PI;
+      let currentAzimuth = orbitAzimuth;
+      let targetAzimuth = orbitAzimuth;
+
+      const updateCameraOrbit = (azimuth: number) => {
+        const spherical = new THREE.Spherical(
+          orbitRadius,
+          lockedPolarAngle,
+          azimuth,
+        );
+        const nextOffset = new THREE.Vector3().setFromSpherical(spherical);
+        camera.position.copy(controls.target).add(nextOffset);
+        camera.lookAt(controls.target);
+      };
+
+      const onPointerMove = (event: PointerEvent) => {
+        const bounds = host.getBoundingClientRect();
+        if (!bounds.width) return;
+        const normalizedX = (event.clientX - bounds.left) / bounds.width;
+        const clampedX = Math.min(Math.max(normalizedX, 0), 1);
+        targetAzimuth =
+          orbitAzimuth - (clampedX * 2 - 1) * maxAzimuthOffset;
+      };
+
+      host.addEventListener("pointermove", onPointerMove);
 
       // ---------- lights ----------
       scene.add(new THREE.AmbientLight(0xffffff, 0.55));
@@ -1333,6 +1366,8 @@ export default function TechStackScene() {
         if (e.key.toLowerCase() === "r") {
           camera.position.copy(camHome);
           controls.target.copy(targetHome);
+          currentAzimuth = orbitAzimuth;
+          targetAzimuth = orbitAzimuth;
         }
       };
       window.addEventListener("keydown", onKey);
@@ -1378,12 +1413,15 @@ export default function TechStackScene() {
           c.position.y = baseCardY + Math.sin(t * 0.8 + i) * 0.06;
         }
 
+        currentAzimuth += (targetAzimuth - currentAzimuth) * 0.08;
+        updateCameraOrbit(currentAzimuth);
         controls.update();
         if (visible) composer.render();
         animationId = requestAnimationFrame(tick);
       };
 
       if (reducedMotion) {
+        updateCameraOrbit(targetAzimuth);
         controls.update();
         composer.render();
       } else {
@@ -1394,6 +1432,7 @@ export default function TechStackScene() {
         cancelAnimationFrame(animationId);
         window.removeEventListener("resize", onResize);
         window.removeEventListener("keydown", onKey);
+        host.removeEventListener("pointermove", onPointerMove);
         ro.disconnect();
         io.disconnect();
         timer.dispose();

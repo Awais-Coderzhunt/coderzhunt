@@ -34,7 +34,6 @@ export default function TechStackScene() {
       if (disposed || !mountRef.current) return;
       const host = mountRef.current;
 
-      // Coderzhunt brand palette (replaces scene.js originals)
       const ACCENT = 0xff6b1a;
       const ACCENT_DEEP = 0xe85d0e;
       const ACCENT_SOFT = 0xffa366;
